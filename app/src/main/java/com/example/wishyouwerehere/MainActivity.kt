@@ -1,9 +1,12 @@
 package com.example.wishyouwerehere
 
 import android.os.Bundle
+import android.view.View
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.snackbar.Snackbar
 
 class MainActivity : AppCompatActivity() {
 
@@ -22,6 +25,17 @@ class MainActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
         adapter.notifyDataSetChanged()
+
+        if(LocationList.lastUpdatedIndex != -1)
+        {
+            val MainLayout = findViewById<View>(R.id.MainActivityLayout)
+            val updatedLocation = LocationList.fLocations[LocationList.lastUpdatedIndex].fLocation
+            MainLayout?.let {
+                Snackbar.make(it, "$updatedLocation Updated!", Snackbar.LENGTH_SHORT)
+                    .show()
+            }
+            LocationList.lastUpdatedIndex = -1
+        }
     }
 
 }

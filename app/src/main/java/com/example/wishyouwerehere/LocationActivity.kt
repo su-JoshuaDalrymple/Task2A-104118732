@@ -9,6 +9,7 @@ import androidx.appcompat.app.AppCompatActivity
 
 class LocationActivity : AppCompatActivity() {
     private var locationIndex: Int = -1
+    private lateinit var locationData: Location
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -16,7 +17,8 @@ class LocationActivity : AppCompatActivity() {
 
         locationIndex = intent.getIntExtra("LOCATION_INDEX", -1)
         if (locationIndex == -1) return
-        val location = LocationList.fLocations[locationIndex]
+
+        locationData = LocationList.fLocations[locationIndex].copy()
 
         val lImageView = findViewById<ImageView>(R.id.vImage)
         val lNameView = findViewById<EditText>(R.id.vLocation)
@@ -25,30 +27,49 @@ class LocationActivity : AppCompatActivity() {
         val lVisitedView = findViewById<EditText>(R.id.vDate)
 
         val imageRes = resources.getIdentifier(
-            "l${location.fImage}",
+            "l${locationData.fImage}",
             "drawable",
             packageName
         )
 
         lImageView.setImageResource(imageRes)
-        lNameView.setText(location.fLocation)
-        lAddressView.setText(location.fAddress)
-        lRatingView.rating = location.fRating
-        lVisitedView.setText(location.fLastVisited)
+        lNameView.setText(locationData.fLocation)
+        lAddressView.setText(locationData.fAddress)
+        lRatingView.rating = locationData.fRating
+        lVisitedView.setText(locationData.fLastVisited)
     }
 
     override fun onPause() {
         super.onPause()
 
-
         if (locationIndex != -1) {
-            val name = findViewById<EditText>(R.id.vLocation).text.toString()
-            val address = findViewById<EditText>(R.id.vAddress).text.toString()
-            val date = findViewById<EditText>(R.id.vDate).text.toString()
+            if( isUpdated() )
+            {
+                val newName = findViewById<EditText>(R.id.vLocation).text.toString()
+                val newAddress = findViewById<EditText>(R.id.vAddress).text.toString()
+                val newDate = findViewById<EditText>(R.id.vDate).text.toString()
+                val newRating = findViewById<RatingBar>(R.id.vRating).rating
 
-            LocationList.fLocations[locationIndex].fLocation = name
-            LocationList.fLocations[locationIndex].fAddress = address
-            LocationList.fLocations[locationIndex].fLastVisited = date
+                LocationList.fLocations[locationIndex].fLocation = newName
+                LocationList.fLocations[locationIndex].fAddress = newAddress
+                LocationList.fLocations[locationIndex].fLastVisited = newDate
+                LocationList.fLocations[locationIndex].fRating = newRating
+                LocationList.lastUpdatedIndex = locationIndex
+            }
         }
+    }
+
+    private fun isUpdated(): Boolean {
+        val currentName = findViewById<EditText>(R.id.vLocation).text.toString()
+        val currentAddress = findViewById<EditText>(R.id.vAddress).text.toString()
+        val currentDate = findViewById<EditText>(R.id.vDate).text.toString()
+        val currentRating = findViewById<RatingBar>(R.id.vRating).rating
+
+        return (
+            currentName != locationData.fLocation ||
+            currentAddress != locationData.fAddress ||
+            currentDate != locationData.fLastVisited ||
+            currentRating != locationData.fRating
+        )
     }
 }
