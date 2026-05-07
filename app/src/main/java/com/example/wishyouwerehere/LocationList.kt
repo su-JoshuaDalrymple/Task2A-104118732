@@ -1,7 +1,7 @@
 package com.example.wishyouwerehere
 
 object LocationList {
-    val fLocations = listOf(
+    var fLocations = mutableListOf(
         Location(
             fLocation = "Lake Wendouree",
             fAddress = "Wendouree Parade, Ballarat VIC 3350",

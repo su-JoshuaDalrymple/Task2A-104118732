@@ -1,36 +1,54 @@
 package com.example.wishyouwerehere
 
 import android.os.Bundle
+import android.widget.EditText
 import android.widget.ImageView
 import android.widget.RatingBar
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 
 class LocationActivity : AppCompatActivity() {
+    private var locationIndex: Int = -1
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_location)
-        val location = intent.getParcelableExtra<Location>("LOCATION")
 
-        // Within the Location Detail Activity "activity_location", find each view by id.
+        locationIndex = intent.getIntExtra("LOCATION_INDEX", -1)
+        if (locationIndex == -1) return
+        val location = LocationList.fLocations[locationIndex]
+
         val lImageView = findViewById<ImageView>(R.id.vImage)
-        val lNameView = findViewById<TextView>(R.id.vLocation)
-        val lAddressView = findViewById<TextView>(R.id.vAddress)
+        val lNameView = findViewById<EditText>(R.id.vLocation)
+        val lAddressView = findViewById<EditText>(R.id.vAddress)
         val lRatingView = findViewById<RatingBar>(R.id.vRating)
-        val lVisitedView = findViewById<TextView>(R.id.vDate)
+        val lVisitedView = findViewById<EditText>(R.id.vDate)
 
-        // Get The Image Resource using the location.fImage
         val imageRes = resources.getIdentifier(
-            "l${location?.fImage}",
+            "l${location.fImage}",
             "drawable",
             packageName
         )
 
-        // For each view within the activity set the content to match that of the location
         lImageView.setImageResource(imageRes)
-        lNameView.text = location?.fLocation
-        lAddressView.text = location?.fAddress
-        lVisitedView.text = location?.fLastVisited
-        lRatingView.rating = location?.fRating!!
+        lNameView.setText(location.fLocation)
+        lAddressView.setText(location.fAddress)
+        lRatingView.rating = location.fRating
+        lVisitedView.setText(location.fLastVisited)
+    }
+
+    override fun onPause() {
+        super.onPause()
+
+
+        if (locationIndex != -1) {
+            val name = findViewById<EditText>(R.id.vLocation).text.toString()
+            val address = findViewById<EditText>(R.id.vAddress).text.toString()
+            val date = findViewById<EditText>(R.id.vDate).text.toString()
+
+            LocationList.fLocations[locationIndex].fLocation = name
+            LocationList.fLocations[locationIndex].fAddress = address
+            LocationList.fLocations[locationIndex].fLastVisited = date
+        }
     }
 }
