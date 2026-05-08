@@ -25,10 +25,10 @@ class LocationListAdapter : RecyclerView.Adapter<LocationListAdapter.ViewHolder>
         holder.bind(lLocation, position)
     }
 
-    inner class ViewHolder(val v: View): RecyclerView.ViewHolder(v) {
-        val fNameView = v.findViewById<TextView>(R.id.vName)
-        val fRatingView = v.findViewById<RatingBar>(R.id.vRating)
-        val fImageView = v.findViewById<ImageView>(R.id.vImage)
+    class ViewHolder(val v: View): RecyclerView.ViewHolder(v) {
+        val fNameView: TextView = v.findViewById(R.id.vName)
+        val fRatingView: RatingBar = v.findViewById(R.id.vRating)
+        val fImageView: ImageView = v.findViewById(R.id.vImage)
 
         fun bind(item: Location, position: Int) {
             val imageRes = v.context.resources.getIdentifier(

@@ -1,10 +1,10 @@
 package com.example.wishyouwerehere
 
 import android.os.Bundle
+import java.util.Calendar
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.RatingBar
-import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 
 class LocationActivity : AppCompatActivity() {
@@ -37,6 +37,24 @@ class LocationActivity : AppCompatActivity() {
         lAddressView.setText(locationData.fAddress)
         lRatingView.rating = locationData.fRating
         lVisitedView.setText(locationData.fLastVisited)
+
+
+        lVisitedView.addTextChangedListener(object : android.text.TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun afterTextChanged(s: android.text.Editable?) {}
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+
+                if (!isValidDate())
+                {
+                    lVisitedView.error = "Enter a full date (DD/MM/YYYY)"
+                }
+                else
+                {
+                    lVisitedView.error = null
+                }
+            }
+        })
     }
 
     override fun onPause() {
@@ -52,8 +70,10 @@ class LocationActivity : AppCompatActivity() {
 
                 LocationList.fLocations[locationIndex].fLocation = newName
                 LocationList.fLocations[locationIndex].fAddress = newAddress
-                LocationList.fLocations[locationIndex].fLastVisited = newDate
                 LocationList.fLocations[locationIndex].fRating = newRating
+                if(isValidDate()) {
+                    LocationList.fLocations[locationIndex].fLastVisited = newDate
+                }
                 LocationList.lastUpdatedIndex = locationIndex
             }
         }
@@ -71,5 +91,23 @@ class LocationActivity : AppCompatActivity() {
             currentDate != locationData.fLastVisited ||
             currentRating != locationData.fRating
         )
+    }
+
+    private fun isValidDate(): Boolean {
+        val currentDate = findViewById<EditText>(R.id.vDate).text.toString()
+        val regex = """^(\d{1,2})/(\d{1,2})/(\d{4})$""".toRegex()
+
+        if(currentDate.matches(regex))
+        {
+            val (day, month, year) = currentDate.split("/")
+            val currentYear = Calendar.getInstance().get(Calendar.YEAR)
+            return (
+                    day.toInt() in 1..31 &&
+                    month.toInt() in 1..12 &&
+                    year.toInt() in 1900 ..currentYear
+            )
+        }
+
+        return false
     }
 }

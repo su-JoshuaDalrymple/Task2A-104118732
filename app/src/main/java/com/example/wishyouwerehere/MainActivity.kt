@@ -2,7 +2,6 @@ package com.example.wishyouwerehere
 
 import android.os.Bundle
 import android.view.View
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -28,9 +27,9 @@ class MainActivity : AppCompatActivity() {
 
         if(LocationList.lastUpdatedIndex != -1)
         {
-            val MainLayout = findViewById<View>(R.id.MainActivityLayout)
+            val mainLayout = findViewById<View>(R.id.MainActivityLayout)
             val updatedLocation = LocationList.fLocations[LocationList.lastUpdatedIndex].fLocation
-            MainLayout?.let {
+            mainLayout?.let {
                 Snackbar.make(it, "$updatedLocation Updated!", Snackbar.LENGTH_SHORT)
                     .show()
             }
