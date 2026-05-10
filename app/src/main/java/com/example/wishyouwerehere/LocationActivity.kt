@@ -1,24 +1,37 @@
 package com.example.wishyouwerehere
 
+import android.app.Activity
+import android.content.Intent
 import android.os.Bundle
 import java.util.Calendar
 import android.widget.EditText
+import androidx.activity.addCallback
 import android.widget.ImageView
 import android.widget.RatingBar
 import androidx.appcompat.app.AppCompatActivity
 
-class LocationActivity : AppCompatActivity() {
+class LocationActivity : AppCompatActivity()
+{
     private var locationIndex: Int = -1
     private lateinit var locationData: Location
 
-    override fun onCreate(savedInstanceState: Bundle?) {
+    override fun onCreate(savedInstanceState: Bundle?)
+    {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_location)
 
         locationIndex = intent.getIntExtra("LOCATION_INDEX", -1)
         if (locationIndex == -1) return
 
-        locationData = LocationList.fLocations[locationIndex].copy()
+        val lData = intent.getParcelableExtra<Location>("LOCATION")
+        if( lData != null )
+        {
+            locationData = lData.copy()
+        }
+        else
+        {
+            return
+        }
 
         val lImageView = findViewById<ImageView>(R.id.vImage)
         val lNameView = findViewById<EditText>(R.id.vLocation)
@@ -39,7 +52,8 @@ class LocationActivity : AppCompatActivity() {
         lVisitedView.setText(locationData.fLastVisited)
 
 
-        lVisitedView.addTextChangedListener(object : android.text.TextWatcher {
+        lVisitedView.addTextChangedListener(object : android.text.TextWatcher
+        {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun afterTextChanged(s: android.text.Editable?) {}
 
@@ -55,27 +69,26 @@ class LocationActivity : AppCompatActivity() {
                 }
             }
         })
-    }
 
-    override fun onPause() {
-        super.onPause()
-
-        if (locationIndex != -1) {
-            if( isUpdated() )
-            {
-                val newName = findViewById<EditText>(R.id.vLocation).text.toString()
-                val newAddress = findViewById<EditText>(R.id.vAddress).text.toString()
-                val newDate = findViewById<EditText>(R.id.vDate).text.toString()
-                val newRating = findViewById<RatingBar>(R.id.vRating).rating
-
-                LocationList.fLocations[locationIndex].fLocation = newName
-                LocationList.fLocations[locationIndex].fAddress = newAddress
-                LocationList.fLocations[locationIndex].fRating = newRating
-                if(isValidDate()) {
-                    LocationList.fLocations[locationIndex].fLastVisited = newDate
+        onBackPressedDispatcher.addCallback(this)
+        {
+            if (locationIndex != -1) {
+                if( isUpdated() )
+                {
+                    locationData.fLocation = lNameView.text.toString()
+                    locationData.fAddress = lAddressView.text.toString()
+                    locationData.fRating = lRatingView.rating
+                    if(isValidDate()) {
+                        locationData.fLastVisited = lVisitedView.text.toString()
+                    }
                 }
-                LocationList.lastUpdatedIndex = locationIndex
             }
+            val resultIntent = Intent().apply {
+                putExtra("LOCATION", locationData)
+                putExtra("LOCATION_INDEX", locationIndex)
+            }
+            setResult(Activity.RESULT_OK, resultIntent)
+            finish()
         }
     }
 
@@ -96,7 +109,6 @@ class LocationActivity : AppCompatActivity() {
     private fun isValidDate(): Boolean {
         val currentDate = findViewById<EditText>(R.id.vDate).text.toString()
         val regex = """^(\d{1,2})/(\d{1,2})/(\d{4})$""".toRegex()
-
         if(currentDate.matches(regex))
         {
             val (day, month, year) = currentDate.split("/")
@@ -107,7 +119,6 @@ class LocationActivity : AppCompatActivity() {
                     year.toInt() in 1900 ..currentYear
             )
         }
-
         return false
     }
 }

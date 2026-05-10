@@ -2,7 +2,6 @@ package com.example.wishyouwerehere
 
 object LocationList {
 
-    var lastUpdatedIndex = -1
     var fLocations = mutableListOf(
         Location(
             fLocation = "Lake Wendouree",

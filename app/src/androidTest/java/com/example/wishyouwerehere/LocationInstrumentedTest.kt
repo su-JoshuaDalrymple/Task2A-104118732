@@ -84,5 +84,7 @@ class LocationAppTesting {
         onView(withText("NewLocationName")).check(matches(isDisplayed()))
         onView(withId(R.id.locationList)).perform(RecyclerViewActions.actionOnItemAtPosition<RecyclerView.ViewHolder>(0, click()))
         onView(withId(R.id.vLocation)).check(matches(withText("NewLocationName")))
+        onView(withId(R.id.vLocation)).perform(replaceText("Lake Wendouree"), closeSoftKeyboard())
+        pressBack()
     }
 }

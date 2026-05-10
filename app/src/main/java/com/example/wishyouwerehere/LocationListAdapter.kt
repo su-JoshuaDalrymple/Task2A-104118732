@@ -1,6 +1,5 @@
 package com.example.wishyouwerehere
 
-import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,7 +8,8 @@ import android.widget.RatingBar
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 
-class LocationListAdapter : RecyclerView.Adapter<LocationListAdapter.ViewHolder>() {
+class LocationListAdapter(private val onItemClick: (Int) -> Unit) :
+    RecyclerView.Adapter<LocationListAdapter.ViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val layoutInflater = LayoutInflater.from(parent.context)
@@ -22,7 +22,7 @@ class LocationListAdapter : RecyclerView.Adapter<LocationListAdapter.ViewHolder>
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val lLocation = LocationList.fLocations[position]
-        holder.bind(lLocation, position)
+        holder.bind(lLocation, position, onItemClick)
     }
 
     class ViewHolder(val v: View): RecyclerView.ViewHolder(v) {
@@ -30,7 +30,7 @@ class LocationListAdapter : RecyclerView.Adapter<LocationListAdapter.ViewHolder>
         val fRatingView: RatingBar = v.findViewById(R.id.vRating)
         val fImageView: ImageView = v.findViewById(R.id.vImage)
 
-        fun bind(item: Location, position: Int) {
+        fun bind(item: Location, position: Int, onClick: (Int) -> Unit) {
             val imageRes = v.context.resources.getIdentifier(
                 "l${item.fImage}",
                 "drawable",
@@ -41,9 +41,7 @@ class LocationListAdapter : RecyclerView.Adapter<LocationListAdapter.ViewHolder>
             fImageView.setImageResource(imageRes)
 
             v.setOnClickListener {
-                val intent = Intent(v.context, LocationActivity::class.java)
-                intent.putExtra("LOCATION_INDEX", position)
-                v.context.startActivity(intent)
+                onClick(position)
             }
         }
     }
